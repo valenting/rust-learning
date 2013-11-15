@@ -13,7 +13,7 @@ fn main() {
 	let o_listener =  TcpListener::bind(
 		SocketAddr { ip: Ipv4Addr(127, 0, 0, 1), port: 9123}).listen();
 
-	let mut acceptor = o_listener.unwrap();
+	let mut acceptor = o_listener;
 	//		SAME AS:
 	//
 	// let mut o_acceptor = match o_listener {
