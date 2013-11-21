@@ -62,11 +62,7 @@ fn tail(word: ~str) -> ~str {
 
 fn zero_pad(word: ~str) -> ~str {
 	let zeros_needed = if word.len() <= 4 { 4 - word.len() } else { 0 } ;
-	let mut zeros = ~"";
-	do zeros_needed.times {
-		zeros = zeros + "0";
-	}
-	return word + zeros;
+	word + "0".repeat(zeros_needed);
 }
 
 #[test]
