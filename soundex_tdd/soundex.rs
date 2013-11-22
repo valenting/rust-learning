@@ -6,7 +6,7 @@
 macro_rules! expect_equal(
 	($val1: expr, $val2:expr) => (
 		if !($val1 == $val2) {
-			println!("expect_equal FAIL: {} to {} ", $val1, $val2);
+			println!("Found: {} but Expected: {} ", $val1, $val2);
 			fail!();
 		}
 	)
@@ -14,11 +14,11 @@ macro_rules! expect_equal(
 
 
 fn encode(word: ~str) -> ~str {
-	return zero_pad(head(word.clone()) + encoded_digits(tail(word)));
+	return zero_pad(first_letter_to_upper(word.clone()) + encoded_digits(tail(word)));
 }
 
 fn digit_code(c: char) -> ~str {
-	match c {
+	match c.to_ascii().to_lower().to_char() {
 		'b'|'f'|'p'|'v' => ~"1",
 		'c'|'g'|'j'|'k'|'q'|'s'|'x'|'z' => ~"2",
 		'd'|'t' => ~"3",
@@ -30,16 +30,34 @@ fn digit_code(c: char) -> ~str {
 }
 
 fn encoded_digits(word: ~str) -> ~str {
-		let mut encoding = ~"";
-		let mut i = 0;
-		while i < word.len() {
-			if is_complete(encoding.clone()) {
-				break;
-			}
-			encoding = encoding + digit_code(word[i] as char);
-			i += 1;
+	let mut encoding = ~"";
+	let mut i = 0;
+	while i < word.len() {
+		if is_complete(encoding.clone()) {
+			break;
 		}
-		return encoding;
+		if digit_code(word[i] as char) != last_digit(encoding.clone()) {
+			encoding = encoding + digit_code(word[i] as char);
+		}
+		i += 1;
+	}
+	return encoding;
+}
+
+fn to_lower(c: char) -> char {
+	c.to_ascii().to_lower().to_char()
+}
+
+fn to_upper(c: char) -> char {
+	c.to_ascii().to_upper().to_char()
+}
+
+fn first_letter_to_upper(word: ~str) -> ~str {
+	if word.len() > 0 {
+		to_upper(word[0] as char).to_str()
+	} else {
+		~""
+	}
 }
 
 fn is_complete(encoding: ~str) -> bool {
@@ -60,9 +78,16 @@ fn tail(word: ~str) -> ~str {
 	return ~"";
 }
 
+fn last_digit(encoding: ~str) -> ~str {
+	if encoding.len() > 0 {
+		return encoding.slice_from(encoding.len()-1).to_owned();
+	}
+	return ~"";
+}
+
 fn zero_pad(word: ~str) -> ~str {
 	let zeros_needed = if word.len() <= 4 { 4 - word.len() } else { 0 } ;
-	word + "0".repeat(zeros_needed);
+	return word + "0".repeat(zeros_needed);
 }
 
 #[test]
@@ -101,7 +126,6 @@ fn replaces_multiple_consonants_with_digits(){
 #[test]
 fn limit_lenght_to_4_characters() {
 	expect_equal!(encode(~"Dcdlb").len(), 4);
-	
 }
 
 #[test]
@@ -110,11 +134,31 @@ fn ignore_vowels() {
 }
 
 #[test]
-#[ignore]
 fn combine_duplicate_encodings() {
 	expect_equal!(digit_code('b'), digit_code('f'));
 	expect_equal!(digit_code('c'), digit_code('g'));
 	expect_equal!(digit_code('d'), digit_code('t'));
 
 	expect_equal!(encode(~"Abfcgdt"), ~"A123");
+}
+
+#[test]
+fn uppercases_firs_letter() {
+	expect_equal!(encode(~"abcd")[0] as char, 'A');
+}
+
+#[test]
+fn ignores_vowel_like_letters() {
+	expect_equal!(encode(~"BaAeEiIoOuUhHyYcdl"), ~"B234");
+}
+
+#[test]
+fn ignore_case_for_consonants() {
+	expect_equal!(encode(~"BCDL"),encode(~"Bcdl"));
+}
+
+#[test]
+#[ignore]
+fn combine_duplicate_code_when_second_is_duplicate_of_first() {
+	expect_equal!(encode(~"Bbcd"), ~"B230");
 }
