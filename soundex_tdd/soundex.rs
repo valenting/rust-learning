@@ -14,7 +14,7 @@ macro_rules! expect_equal(
 
 
 fn encode(word: ~str) -> ~str {
-	return zero_pad(first_letter_to_upper(word.clone()) + encoded_digits(tail(word)));
+	return zero_pad(first_letter_to_upper(word.clone()) + tail(encoded_digits(word)));
 }
 
 fn digit_code(c: char) -> ~str {
@@ -31,16 +31,25 @@ fn digit_code(c: char) -> ~str {
 
 fn encoded_digits(word: ~str) -> ~str {
 	let mut encoding = ~"";
-	let mut i = 0;
+	if (word.len() > 0) {
+		let code = digit_code(to_lower(word.clone()[0] as char));
+		if code.len() > 0 {
+			encoding = encoding + code;	
+		} else {
+			encoding = encoding + to_lower(word.clone()[0] as char).to_str();
+		}
+	}
+	let mut i = 1;
 	while i < word.len() {
 		if is_complete(encoding.clone()) {
 			break;
 		}
-		if digit_code(word[i] as char) != last_digit(encoding.clone()) {
+		if digit_code(word[i] as char) != digit_code(word[i-1] as char) {
 			encoding = encoding + digit_code(word[i] as char);
 		}
 		i += 1;
 	}
+	//println!("--- {}", encoding);
 	return encoding;
 }
 
@@ -61,7 +70,7 @@ fn first_letter_to_upper(word: ~str) -> ~str {
 }
 
 fn is_complete(encoding: ~str) -> bool {
-	encoding.len() == 3 // TODO: devine this to MAX - 1
+	encoding.len() == 4 // TODO: devine this to MAX - 1
 }
 
 fn head(word: ~str) -> ~str {
@@ -158,7 +167,11 @@ fn ignore_case_for_consonants() {
 }
 
 #[test]
-#[ignore]
 fn combine_duplicate_code_when_second_is_duplicate_of_first() {
 	expect_equal!(encode(~"Bbcd"), ~"B230");
+}
+
+#[test]
+fn does_not_combine_dup_encodings_separated_by_vowels() {
+	expect_equal!(encode(~"Jbob"), ~"J110");
 }
