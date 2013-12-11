@@ -1,8 +1,6 @@
 #[feature(macro_rules)];
 
 
-
-
 macro_rules! expect_equal(
 	($val1: expr, $val2:expr) => (
 		if !($val1 == $val2) {
