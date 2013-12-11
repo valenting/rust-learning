@@ -1,9 +1,9 @@
 use std::cell::Cell;
-use std::rt::io::{Writer, Listener, Acceptor};
-use std::rt::io::net::tcp::TcpStream;
-use std::rt::io::net::ip::{SocketAddr, Ipv4Addr};
-use std::rt::io;
-use std::rt::io::buffered::BufferedReader;
+use std::io::{Writer, Listener, Acceptor};
+use std::io::net::tcp::TcpStream;
+use std::io::net::ip::{SocketAddr, Ipv4Addr};
+use std::io;
+use std::io::buffered::BufferedReader;
 use std::str;
 use std::str::not_utf8;
 

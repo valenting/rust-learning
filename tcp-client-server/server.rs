@@ -1,6 +1,6 @@
-use std::rt::io::{Listener, Acceptor};
-use std::rt::io::net::tcp::TcpListener;
-use std::rt::io::net::ip::{SocketAddr, Ipv4Addr};
+use std::io::{Listener, Acceptor};
+use std::io::net::tcp::TcpListener;
+use std::io::net::ip::{SocketAddr, Ipv4Addr};
 use std::str;
 use std::str::not_utf8;
 use std::cell::Cell;
