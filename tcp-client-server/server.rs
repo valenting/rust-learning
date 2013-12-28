@@ -2,7 +2,6 @@ use std::io::{Listener, Acceptor};
 use std::io::net::tcp::TcpListener;
 use std::io::net::ip::{SocketAddr, Ipv4Addr};
 use std::str;
-use std::str::not_utf8;
 use std::cell::RefCell;
 
 fn main() {

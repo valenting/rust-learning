@@ -1,11 +1,8 @@
-use std::cell::Cell;
-use std::io::{Writer, Listener, Acceptor};
+use std::io::Writer;
 use std::io::net::tcp::TcpStream;
 use std::io::net::ip::{SocketAddr, Ipv4Addr};
 use std::io;
 use std::io::buffered::BufferedReader;
-use std::str;
-use std::str::not_utf8;
 
 fn main() {
 	info!("Starting client");
