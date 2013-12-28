@@ -3,7 +3,7 @@ use std::io::net::tcp::TcpListener;
 use std::io::net::ip::{SocketAddr, Ipv4Addr};
 use std::str;
 use std::str::not_utf8;
-use std::cell::Cell;
+use std::cell::RefCell;
 
 fn main() {
 	// To view debug messages run server with the following command
@@ -25,9 +25,9 @@ fn main() {
 		let o_stream = acceptor.accept();
 		let stream = o_stream.unwrap();
 		// We need to wrap stream in a cell, to pass it to the new task
-		let cell = Cell::new(stream);
+		let cell = RefCell::new(stream);
 		do spawn {
-			let mut stream = cell.take();
+			let mut stream = cell.unwrap();
 			let name = stream.peer_name().unwrap();
 			loop {
 				let mut buf: [u8, ..100] = [0, ..100];
@@ -36,13 +36,14 @@ fn main() {
 					Some(x) => println!("Received {} bytes on {:s}", x, name.to_str()),
 					None => { println("EOF"); break; }
 				}
-				do not_utf8::cond.trap(|_| ~"Error").inside {
-					// Displays the entered string, or "Error" if the socket is remotely closed
-					println(str::replace(str::from_utf8(buf),"\n",""));
-				}
+				
+				let string = match str::from_utf8_opt(buf) {
+					Some(x) => x,
+					None => ""
+				};
+
+				println(str::replace(string,"\n",""));
 			}
 		}
 	}
-	
-	 
 }
